@@ -1,0 +1,29 @@
+# ===== 依赖与构建产物 =====
+node_modules/
+dist/
+dist-server/
+
+# ===== 沙箱 Python 虚拟环境（用 scripts/setup-python.ps1 重建） =====
+.venv/
+
+# ===== 环境变量：里面是 API Key，绝对不要提交 =====
+.env
+.env.*
+!.env.example
+
+# ===== 本地数据与日志 =====
+data/*.db
+data/*.db-journal
+*.log
+*.out
+*.tsbuildinfo
+vite.config.ts.timestamp-*
+
+# ===== 沙箱可能产生的临时目录 =====
+sandbox-tmp/
+
+# ===== 编辑器 / 系统 =====
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

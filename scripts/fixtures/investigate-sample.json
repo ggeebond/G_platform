@@ -1,0 +1,30 @@
+{
+  "soul": { "id": "soul_adaptive_horizon", "title": "Adaptive Action Horizon" },
+  "experiment": { "id": "exp_prune40", "title": "Prune 40% vs baseline", "hypothesis": "pruning 40% 保持 success 并降低 latency" },
+  "rows": [
+    { "group": "baseline", "success_rate": 0.82, "latency_ms": 7.1 },
+    { "group": "baseline", "success_rate": 0.80, "latency_ms": 7.3 },
+    { "group": "baseline", "success_rate": 0.84, "latency_ms": 6.9 },
+    { "group": "baseline", "success_rate": 0.83, "latency_ms": 7.0 },
+    { "group": "baseline", "success_rate": 0.81, "latency_ms": 7.2 },
+    { "group": "baseline", "success_rate": 0.82, "latency_ms": 7.1 },
+    { "group": "baseline", "success_rate": 0.83, "latency_ms": 7.0 },
+    { "group": "baseline", "success_rate": 0.82, "latency_ms": 7.1 },
+    { "group": "treatment", "success_rate": 0.78, "latency_ms": 4.3 },
+    { "group": "treatment", "success_rate": 0.76, "latency_ms": 4.5 },
+    { "group": "treatment", "success_rate": 0.77, "latency_ms": 4.2 },
+    { "group": "treatment", "success_rate": 0.79, "latency_ms": 4.4 },
+    { "group": "treatment", "success_rate": 0.78, "latency_ms": 4.3 },
+    { "group": "treatment", "success_rate": 0.77, "latency_ms": 4.4 },
+    { "group": "treatment", "success_rate": 0.78, "latency_ms": 4.2 },
+    { "group": "treatment", "success_rate": 0.76, "latency_ms": 4.5 }
+  ],
+  "mapping": {
+    "groupColumn": "group",
+    "baselineValue": "baseline",
+    "treatmentValue": "treatment",
+    "metricColumns": ["success_rate", "latency_ms"]
+  },
+  "fileName": "prune40.csv",
+  "humanView": ""
+}
