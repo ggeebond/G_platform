@@ -1,3 +1,7 @@
+> 🌐 **在线体验 · 点开即用 →** <https://test-platform-dun-two.vercel.app/>
+>
+> 无需安装、无需任何配置，打开即可使用（前端与 Agent 后端均已部署到 Vercel）。
+
 # Soul Lab — 会生长的科研花园
 
 > 用户进入的不是「一个科研状态可视化组件 + 一个聊天后台」，而是一座 **3D Research Garden**。
