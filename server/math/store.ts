@@ -7,7 +7,7 @@
  *   tool_runs  —— 每次运行的 Provenance：结果永远可以回查"这个数字怎么算出来的"
  */
 import * as db from "../db.js";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import type { ToolSpec } from "../../shared/schemas.js";
 
 export interface ToolRow {
@@ -106,7 +106,7 @@ export async function insertRun(params: {
   durationMs: number;
   status: "ok" | "error";
 }): Promise<string> {
-  const runId = uuidv4();
+  const runId = randomUUID();
   await db.run(
     `INSERT INTO tool_runs (run_id, tool_id, tool_version, soul_id, experiment_id,
                              params_json, input_summary, output_json, code_hash,

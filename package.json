@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "server": "tsx server/index.ts",
     "verify": "tsx scripts/verify-garden.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.server.json",
+    "typecheck:client": "tsc --noEmit -p tsconfig.json",
+    "typecheck:server": "tsc --noEmit -p tsconfig.server.json"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",
@@ -31,7 +33,6 @@
     "react-dropzone": "^14.3.5",
     "simple-statistics": "^7.8.7",
     "three": "^0.169.0",
-    "uuid": "^9.0.0",
     "xlsx": "^0.18.5",
     "zod": "^4.0.0",
     "zustand": "^4.5.5"

@@ -7,8 +7,8 @@
  * Vercel 上文件系统只读，DB 走 Turso（libSQL）；本地走 better-sqlite3。
  */
 import express from "express";
-import { unstable_v2_authenticate, PermissionResult, CanUseTool } from "@tencent-ai/agent-sdk";
-import { v4 as uuidv4 } from "uuid";
+import { query, unstable_v2_authenticate, PermissionResult, CanUseTool } from "@tencent-ai/agent-sdk";
+import { randomUUID } from "node:crypto";
 import path from "path";
 import { fileURLToPath } from "url";
 import * as db from "./db.js";
@@ -282,9 +282,10 @@ app.post("/api/sessions", async (req, res) => {
     const now = new Date().toISOString();
 
     const session = await db.createSession({
-      id: uuidv4(),
+      id: randomUUID(),
       title,
       model,
+      sdk_session_id: null,
       created_at: now,
       updated_at: now,
     });
@@ -395,7 +396,7 @@ app.post("/api/chat", async (req, res) => {
     // 创建新会话
     console.log(`[Chat] 创建新会话`);
     session = await db.createSession({
-      id: sessionId || uuidv4(),
+      id: sessionId || randomUUID(),
       title: message.slice(0, 30) + (message.length > 30 ? "..." : ""),
       model: !model || /pro/i.test(model) ? defaultModel : model,
       sdk_session_id: null, // 稍后从 SDK 获取
@@ -416,8 +417,8 @@ app.post("/api/chat", async (req, res) => {
   const sdkSessionId = session.sdk_session_id;
 
   // 创建用户消息 ID 和助手消息 ID
-  const userMessageId = uuidv4();
-  const assistantMessageId = uuidv4();
+  const userMessageId = randomUUID();
+  const assistantMessageId = randomUUID();
 
   // 保存用户消息到数据库
   try {
@@ -467,7 +468,7 @@ app.post("/api/chat", async (req, res) => {
       }
 
       // 创建权限请求
-      const requestId = uuidv4();
+      const requestId = randomUUID();
       const permissionRequest = {
         requestId,
         toolUseId: options.toolUseID,
@@ -578,13 +579,14 @@ app.post("/api/chat", async (req, res) => {
               fullResponse += block.text;
               res.write(`data: ${JSON.stringify({ type: "text", content: block.text })}\n\n`);
             } else if (block.type === "tool_use") {
-              currentToolId = block.id || uuidv4();
+              const toolCallId = block.id || randomUUID();
+              currentToolId = toolCallId;
               const toolInput = (block as any).input || {};
-              console.log(`[Stream] Tool use: id=${currentToolId}, name=${block.name}`);
+              console.log(`[Stream] Tool use: id=${toolCallId}, name=${block.name}`);
               console.log(`[Stream] Tool input:`, JSON.stringify(toolInput, null, 2));
 
               const toolCall = {
-                id: currentToolId,
+                id: toolCallId,
                 name: block.name,
                 input: toolInput,
                 status: "running",
@@ -602,8 +604,8 @@ app.post("/api/chat", async (req, res) => {
             }
           }
         }
-      } else if (msg.type === "tool_result") {
-        // 处理工具结果（独立的消息类型）
+      } else if ((msg as any).type === "tool_result") {
+        // 处理工具结果（独立的消息类型；SDK 类型未声明该分支，故用 any 兼容）
         const msgAny = msg as any;
         const toolId = msgAny.tool_use_id || currentToolId;
         const isError = msgAny.is_error || false;
@@ -643,7 +645,7 @@ app.post("/api/chat", async (req, res) => {
           }
         });
         res.write(
-          `data: ${JSON.stringify({ type: "done", duration: msg.duration, cost: msg.cost })}\n\n`,
+          `data: ${JSON.stringify({ type: "done", duration: (msg as any).duration, cost: (msg as any).cost })}\n\n`,
         );
       }
     }
