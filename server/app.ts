@@ -686,6 +686,26 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
+/* ============= 统一错误处理（把失败原因直接回给调用方，便于线上排障）============= */
+
+// Express 错误处理必须 4 个参数才会被识别；放在所有路由之后。
+app.use(
+  (
+    err: any,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction,
+  ) => {
+    console.error("[App] Unhandled error:", err);
+    if (res.headersSent) return; // SSE 已开始写出则无法再改响应
+    res.status(500).json({
+      ok: false,
+      error: err?.message ? String(err.message) : String(err),
+      hint: "常见原因：① 未配置 TURSO_URL / TURSO_AUTH_TOKEN（Vercel 文件系统只读，必须用外部 DB）；② 配了环境变量但未重新部署（Vercel 环境变量只对之后的新部署生效）。",
+    });
+  },
+);
+
 /* ============= 导出 ============= */
 
 /** 本地 / Vercel 共用的启动准备（建表）。幂等。 */

@@ -157,12 +157,17 @@ let dbInitialized = false;
 /** 初始化数据库（建表 + 兼容性迁移）。幂等，可安全多次调用。 */
 export async function initDb(): Promise<void> {
   if (dbInitialized) return;
-  const b = backend();
 
-  if (b === sqliteBackend) {
-    // SQLite：WAL 等pragma已在 getSqlite 里设置
+  // 明确的诊断：Vercel 上文件系统只读，必须用外部 DB；缺配置时给出可读的错误而不是
+  // 晦涩的 EROFS/ENOENT。
+  if (process.env.VERCEL && !process.env.TURSO_URL && !process.env.DATABASE_URL) {
+    throw new Error(
+      "Vercel 环境缺少外部数据库配置：请在项目环境变量中设置 TURSO_URL 与 TURSO_AUTH_TOKEN，" +
+        "并在配置后重新部署（Vercel 文件系统只读，无法使用本地 SQLite）。",
+    );
   }
 
+  const b = backend();
   await b.exec(SCHEMA);
 
   // 兼容性迁移：老库可能没有 sdk_session_id 列（新 DDL 已包含，幂等忽略失败）
