@@ -14,11 +14,11 @@
 import { app } from "../server/app.js";
 
 // Vercel Node 函数配置
-// - runtime：使用与依赖兼容的 Node 运行时
+// - runtime：文件级 config.runtime 只接受 "nodejs"/"edge"/"experimental-edge"，
+//   不能带版本号；Node 版本请写在 vercel.json 的 functions["api/index.ts"].runtime。
 // - maxDuration：流式 SSE（聊天 / 数学调查）可能需要较长时间，建议 Pro 计划；
 //   若在 Hobby 计划上部署，请改为 10（但数学调查与长对话可能被提前截断）。
 export const config = {
-  runtime: "nodejs20.x",
   maxDuration: 60,
 };
 
